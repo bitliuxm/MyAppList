@@ -25,6 +25,7 @@ public class FileUtil {
 
     private static final String PATTERN_PACKAGE_NAME = "<app\\s+package=\"([^\"]+)\"\\s+name=\"([^\"]+)\"\\s*\\/>";
     private static final String PATTERN_NAME_PACKAGE = "<app\\s+name=\"([^\"]+)\"\\s+package=\"([^\"]+)\"\\s*\\/>";
+    private static final String PATTERN_COMMENT = "<app\\s+comment=\"([^\"]+)\"\\s+comment=\"([^\"]+)\"\\s*\\/>";
 
     private static final String HTML_FILENAME = "myapplist-backup.html";
     private static final String TEXT_FILENAME = "myapplist-backup.txt";
@@ -179,6 +180,7 @@ public class FileUtil {
                     serializer.startTag("", "app");
                     serializer.attribute("", "name", appInfo.getName());
                     serializer.attribute("", "package", appInfo.getPackageName());
+                    serializer.attribute("", "comment", appInfo.getComment() == null ? "" : appInfo.getComment());
                     serializer.endTag("", "app");
                 }
             }
@@ -263,7 +265,8 @@ public class FileUtil {
             ArrayList<AppInfo> lst = new ArrayList<AppInfo>();
             readAppInfo(lst, PATTERN_NAME_PACKAGE, buffer);
             readAppInfo(lst, PATTERN_PACKAGE_NAME, buffer);
-            
+            readAppInfo(lst, PATTERN_COMMENT, buffer);
+
             // Write file
             writeFile(null, lst, to);
             
@@ -290,6 +293,7 @@ public class FileUtil {
             appInfo = new AppInfo();
             appInfo.setName(matcher.group(1));
             appInfo.setPackageName(matcher.group(2));
+            appInfo.setComment(matcher.group(3));
             lst.add(appInfo);
         }
     }

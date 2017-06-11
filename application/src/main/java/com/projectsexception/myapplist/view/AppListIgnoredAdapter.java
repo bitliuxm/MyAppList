@@ -16,17 +16,16 @@ import com.projectsexception.myapplist.model.AppInfo;
 
 import java.util.ArrayList;
 
-import butterknife.InjectView;
-import butterknife.ButterKnife;
-
 public class AppListIgnoredAdapter extends BaseAdapter {
 
     static class ViewHolder {
-        @InjectView(android.R.id.text1) TextView title;
-        @InjectView(android.R.id.icon1) IconView icon;
-        @InjectView(android.R.id.checkbox) CheckBox checkBox;
+        TextView title;
+        IconView icon;
+        CheckBox checkBox;
         ViewHolder(View view) {
-            ButterKnife.inject(this, view);
+            title = (TextView) view.findViewById(android.R.id.text1);
+            icon = (IconView) view.findViewById(android.R.id.icon1);
+            checkBox = (CheckBox) view.findViewById(android.R.id.checkbox);
         }
     }
 

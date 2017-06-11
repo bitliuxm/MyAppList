@@ -23,7 +23,7 @@ public class AppListFragment extends AbstractAppListFragment {
         void settings();
         void saveAppList(List<AppInfo> appList);
         void shareAppList(ArrayList<AppInfo> appList, boolean copyToClipboard);
-        void showAppInfo(String name, String packageName);
+        void showAppInfo(String name, String packageName, String comment);
     }
 
     private CallBack mCallBack;
@@ -60,9 +60,9 @@ public class AppListFragment extends AbstractAppListFragment {
     }
 
     @Override
-    void showAppInfo(String name, String packageName) {
+    void showAppInfo(String name, String packageName, String comment) {
         if (mCallBack != null) {
-            mCallBack.showAppInfo(name, packageName);
+            mCallBack.showAppInfo(name, packageName, comment);
         }
     }
 

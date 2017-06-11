@@ -30,8 +30,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import butterknife.InjectView;
-import butterknife.ButterKnife;
 import de.keyboardsurfer.android.widget.crouton.Crouton;
 import de.keyboardsurfer.android.widget.crouton.Style;
 
@@ -52,11 +50,11 @@ public class FolderPickerFragment extends ListFragment implements View.OnClickLi
         void cancel();
     }
 
-    @InjectView(android.R.id.button2) ImageButton mNavigationUpButton;
-    @InjectView(android.R.id.text1) TextView mSelectedFolder;
-    @InjectView(android.R.id.closeButton) Button mCancelButton;
-    @InjectView(android.R.id.button1) Button mOkButton;
-    @InjectView(android.R.id.empty) TextView mEmptyView;
+    ImageButton mNavigationUpButton;
+    TextView mSelectedFolder;
+    Button mCancelButton;
+    Button mOkButton;
+    TextView mEmptyView;
     FolderAdapter mAdapter;
 
     CallBack mCallBack;
@@ -87,7 +85,13 @@ public class FolderPickerFragment extends ListFragment implements View.OnClickLi
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_picker_folder, container, false);
-        ButterKnife.inject(this, view);
+
+        mNavigationUpButton = (ImageButton) view.findViewById(R.id.button_fragment_picker_folder);
+        mSelectedFolder  = (TextView) view.findViewById(R.id.text_fragment_picker_folder);
+        mCancelButton  = (Button) view.findViewById(R.id.closeButton_fragment_picker_folder);
+        mOkButton = (Button) view.findViewById(R.id.button_ok_fragment_picker_folder);
+        mEmptyView = (TextView) view.findViewById(R.id.empty_fragment_picker_folder);
+
         mNavigationUpButton.setOnClickListener(this);
         mCancelButton.setOnClickListener(this);
         mOkButton.setOnClickListener(this);

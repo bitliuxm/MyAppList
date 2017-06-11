@@ -84,10 +84,18 @@
                     android:textIsSelectable="true"/>
 
                 <TextView
-                    android:id="@+id/version"
+                    android:id="@+id/comment"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_below="@+id/package_name"
+                    android:layout_toRightOf="@+id/icon"
+                    android:textIsSelectable="true"/>
+
+                <TextView
+                    android:id="@+id/version"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/comment"
                     android:layout_toRightOf="@+id/icon"
                     android:singleLine="true"
                     android:text="@string/app_info_version" />

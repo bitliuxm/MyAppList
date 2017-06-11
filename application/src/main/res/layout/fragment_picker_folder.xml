@@ -10,14 +10,14 @@
         android:orientation="horizontal">
 
         <ImageButton
-            android:id="@android:id/button2"
+            android:id="@+id/button_fragment_picker_folder"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:padding="10dp"
             style="?navigationUpButtonStyle"/>
 
         <TextView
-            android:id="@android:id/text1"
+            android:id="@+id/text_fragment_picker_folder"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginLeft="10dp"
@@ -39,7 +39,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"/>
         <TextView
-            android:id="@android:id/empty"
+            android:id="@+id/empty_fragment_picker_folder"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
@@ -62,7 +62,7 @@
             android:layout_weight="1"
             android:padding="10dp"
             android:text="@android:string/cancel"
-            android:id="@android:id/closeButton"
+            android:id="@+id/closeButton_fragment_picker_folder"
             android:background="?listBackground"/>
 
         <View
@@ -78,7 +78,7 @@
             android:layout_weight="1"
             android:padding="10dp"
             android:text="@android:string/ok"
-            android:id="@android:id/button1"
+            android:id="@+id/button_ok_fragment_picker_folder"
             android:background="?listBackground"/>
     </LinearLayout>
 

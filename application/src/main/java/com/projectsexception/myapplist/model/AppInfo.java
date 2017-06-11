@@ -9,8 +9,9 @@ public class AppInfo implements Comparable<AppInfo>, Parcelable {
     
     private final Collator sCollator = Collator.getInstance();
     
-    private String packageName;
-    private String name;
+    private String packageName = "";
+    private String name = "";
+    private String comment = "";
     private boolean installed;
 
     public String getPackageName() {
@@ -27,6 +28,14 @@ public class AppInfo implements Comparable<AppInfo>, Parcelable {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getComment() {
+        return comment;
+    }
+
+    public void setComment(String comment) {
+        this.comment = comment;
     }
 
     public boolean isInstalled() {
@@ -56,6 +65,7 @@ public class AppInfo implements Comparable<AppInfo>, Parcelable {
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeString(name);
         dest.writeString(packageName);
+        dest.writeString(comment);
         dest.writeString(Boolean.toString(installed));
     }
     
@@ -66,6 +76,7 @@ public class AppInfo implements Comparable<AppInfo>, Parcelable {
             AppInfo appInfo = new AppInfo();
             appInfo.setName(source.readString());
             appInfo.setPackageName(source.readString());
+            appInfo.setComment(source.readString());
             appInfo.setInstalled(Boolean.parseBoolean(source.readString()));
             return appInfo;
         }

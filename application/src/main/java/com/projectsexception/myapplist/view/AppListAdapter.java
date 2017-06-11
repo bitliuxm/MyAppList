@@ -28,18 +28,21 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
-import butterknife.ButterKnife;
-import butterknife.InjectView;
 
 public class AppListAdapter extends MultiChoiceBaseAdapter implements View.OnClickListener {
 
     static class ViewHolder {
-        @InjectView(android.R.id.text1) TextView title;
-        @InjectView(android.R.id.text2) TextView packageName;
-        @InjectView(android.R.id.icon1) IconView icon;
-        @InjectView(android.R.id.checkbox) CheckBox checkBox;
+        TextView title;
+        TextView packageName;
+        IconView icon;
+        CheckBox checkBox;
+        TextView comment;
         ViewHolder(View view) {
-            ButterKnife.inject(this, view);
+            title = (TextView) view.findViewById(R.id.text_list_item);
+            packageName = (TextView) view.findViewById(R.id.text2_list_item);
+            icon = (IconView) view.findViewById(R.id.icon_list_item);
+            checkBox = (CheckBox) view.findViewById(R.id.checkbox_list_item);
+            comment = (TextView) view.findViewById(R.id.text3_list_item);
         }
     }
 
@@ -99,7 +102,8 @@ public class AppListAdapter extends MultiChoiceBaseAdapter implements View.OnCli
     private boolean filter(AppInfo appInfo) {
         return TextUtils.isEmpty(mSearchTerm)
                 || (appInfo.getName() != null && appInfo.getName().toUpperCase().contains(mSearchTerm))
-                || (appInfo.getPackageName() != null && appInfo.getPackageName().toUpperCase().contains(mSearchTerm));
+                || (appInfo.getPackageName() != null && appInfo.getPackageName().toUpperCase().contains(mSearchTerm))
+                || (appInfo.getComment() != null && appInfo.getComment().toUpperCase().contains(mSearchTerm));
     }
 
     public ArrayList<AppInfo> getActualItems() {
@@ -144,6 +148,12 @@ public class AppListAdapter extends MultiChoiceBaseAdapter implements View.OnCli
             applyMatches(item.getPackageName(), viewHolder.packageName, mInstalledColor, mMatchesColor, false);
         }
 
+        if (item.getComment() == null) {
+            viewHolder.comment.setText(null);
+        } else {
+            applyMatches(item.getComment(), viewHolder.comment, mInstalledColor, mMatchesColor, false);
+        }
+
         viewHolder.icon.setPackageName(mPm, item.getPackageName(), R.drawable.ic_default_launcher, true);
 
         if (viewHolder.checkBox.getVisibility() == View.GONE) {
@@ -154,6 +164,7 @@ public class AppListAdapter extends MultiChoiceBaseAdapter implements View.OnCli
         if (ThemeManager.isFlavoredTheme(mContext)) {
             TypefaceProvider.setTypeFace(mContext, viewHolder.title, TypefaceProvider.FONT_BOLD);
             TypefaceProvider.setTypeFace(mContext, viewHolder.packageName, TypefaceProvider.FONT_REGULAR);
+            TypefaceProvider.setTypeFace(mContext, viewHolder.comment, TypefaceProvider.FONT_REGULAR);
             if (mAnimations && position > mLastAnimatedPosition) {
                 AnimationUtil.animateIn(view);
                 mLastAnimatedPosition = position;

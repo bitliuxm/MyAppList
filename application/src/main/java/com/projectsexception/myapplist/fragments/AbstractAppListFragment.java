@@ -30,8 +30,6 @@ import com.projectsexception.myapplist.view.AppListAdapter;
 
 import java.util.ArrayList;
 
-import butterknife.ButterKnife;
-import butterknife.InjectView;
 
 public abstract class AbstractAppListFragment extends ListFragment implements
         LoaderManager.LoaderCallbacks<ArrayList<AppInfo>>,
@@ -42,27 +40,31 @@ public abstract class AbstractAppListFragment extends ListFragment implements
     private static final String KEY_LISTENER = "AbstractAppListFragment";
 
     protected static final String ARG_RELOAD = "reload";
-    
+
+    private ArrayList<AppInfo> mAdapterData;
     private MenuItem mRefreshItem;
     private AppListAdapter mAdapter;
     private String mSearchTerm;
     private boolean mListShown;
     private boolean mAnimations;
-    @InjectView(android.R.id.list)
     ListView mListView;
-    @InjectView(android.R.id.empty) View mEmptyView;
-    @InjectView(android.R.id.progress) View mProgress;
+    View mEmptyView;
+    View mProgress;
 
     abstract int getMenuAdapter();
     abstract int getMenuResource();
     abstract Loader<ArrayList<AppInfo>> createLoader(int id, Bundle args);
-    abstract void showAppInfo(String name, String packageName);
+    abstract void showAppInfo(String name, String packageName, String comment);
     abstract int getTitle();
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+
         View view = inflater.inflate(R.layout.fragment_list, container, false);
-        ButterKnife.inject(this, view);
+
+        mListView = (ListView)view.findViewById(android.R.id.list);
+        mEmptyView = view.findViewById(R.id.empty_fragment_list);
+        mProgress = view.findViewById(R.id.progress_fragment_list);
         return view;
     }
 
@@ -138,7 +140,7 @@ public abstract class AbstractAppListFragment extends ListFragment implements
         AppInfo appInfo = mAdapter.getActualItems().get(position);
         if (!TextUtils.isEmpty(appInfo.getPackageName())) {
             if (appInfo.isInstalled()) {
-                showAppInfo(appInfo.getName(), appInfo.getPackageName());
+                showAppInfo(appInfo.getName(), appInfo.getPackageName(), appInfo.getComment());
             } else {
                 AppUtil.showPlayGoogleApp(getActivity(), appInfo.getPackageName(), false);
             }
@@ -196,7 +198,10 @@ public abstract class AbstractAppListFragment extends ListFragment implements
         loading(false);
         
         ApplicationsReceiver.getInstance(getActivity()).registerListener(KEY_LISTENER);
-        
+
+
+        mAdapterData = data;
+
         // Set the new data in the adapter.
         mAdapter.setData(data);
         mAdapter.notifyDataSetChanged();
@@ -210,6 +215,8 @@ public abstract class AbstractAppListFragment extends ListFragment implements
     @Override 
     public void onLoaderReset(Loader<ArrayList<AppInfo>> loader) {
         loading(false);
+
+        mAdapterData = null;
         // Clear the data in the adapter.
         mAdapter.setData(null);
         mAdapter.notifyDataSetChanged();
@@ -277,6 +284,17 @@ public abstract class AbstractAppListFragment extends ListFragment implements
         }
     }
 
+    public ArrayList<AppInfo> updateAppInfo(String mName, String mPackage, String mCommentString) {
+        // Set the new data in the adapter.
+        for (AppInfo appInfo : mAdapterData) {
+            if(appInfo.getName().equals(mName)) {
+                appInfo.setComment(mCommentString);
+            }
+        }
+        getAdapter().setData(mAdapterData);
+        getAdapter().notifyDataSetChanged();
+        return mAdapterData;
+    }
     protected String getSearchTerm() {
         return mSearchTerm;
     }

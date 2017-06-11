@@ -25,8 +25,6 @@ import com.projectsexception.myapplist.util.AppUtil;
 
 import java.util.ArrayList;
 
-import butterknife.InjectView;
-import butterknife.ButterKnife;
 import de.keyboardsurfer.android.widget.crouton.Crouton;
 
 public class ListInstallActivity extends BaseActivity implements View.OnClickListener {
@@ -43,8 +41,8 @@ public class ListInstallActivity extends BaseActivity implements View.OnClickLis
     private int mStatus;
     private ArrayList<AppInfo> mAppInfoList;
     private AppInstallAdapter mAdapter;
-    @InjectView(R.id.cancel_button_layout) View mCancelButtonLayout;
-    @InjectView(R.id.cancel_button) TextView mCancelButton;
+    View mCancelButtonLayout;
+    TextView mCancelButton;
     private int mTheme;
 
     @Override
@@ -52,7 +50,9 @@ public class ListInstallActivity extends BaseActivity implements View.OnClickLis
         super.onCreate(savedInstance);
 
         setContentView(R.layout.activity_install);
-        ButterKnife.inject(this);
+
+        mCancelButtonLayout = findViewById(R.id.cancel_button_layout);
+        mCancelButton = (TextView) findViewById(R.id.cancel_button);
 
         mCancelButton.setOnClickListener(this);
 
@@ -68,7 +68,7 @@ public class ListInstallActivity extends BaseActivity implements View.OnClickLis
         }
 
         mAdapter = new AppInstallAdapter(this, mAppInfoList);
-        ListView listView = (ListView) findViewById(android.R.id.list);
+        ListView listView = (ListView) findViewById(R.id.list_activity_install);
         listView.setAdapter(mAdapter);
 
         if (mStatus == STATE_INIT) {
@@ -168,11 +168,13 @@ public class ListInstallActivity extends BaseActivity implements View.OnClickLis
     }
 
     static class ViewHolder {
-        @InjectView(android.R.id.text1) TextView title;
-        @InjectView(android.R.id.icon1) ImageView icon;
-        @InjectView(android.R.id.checkbox) CheckBox checkBox;
+        TextView title;
+        ImageView icon;
+        CheckBox checkBox;
         ViewHolder(View view) {
-            ButterKnife.inject(this, view);
+            title = (TextView) view.findViewById(android.R.id.text1);
+            icon  = (ImageView) view.findViewById(android.R.id.icon1);
+            checkBox  = (CheckBox) view.findViewById(android.R.id.checkbox);
         }
     }
 

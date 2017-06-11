@@ -40,7 +40,7 @@ public class FileListFragment extends AbstractAppListFragment {
         void updateAppList(String fileName, List<AppInfo> appList);
         void shareAppList(String filePath, ArrayList<AppInfo> appList);
         void installAppList(ArrayList<AppInfo> appList);
-        void showAppInfo(String name, String packageName);
+        void showAppInfo(String name, String packageName, String comment);
         void fileDeleted();
     }
 
@@ -85,9 +85,9 @@ public class FileListFragment extends AbstractAppListFragment {
     }
 
     @Override
-    void showAppInfo(String name, String packageName) {
+    void showAppInfo(String name, String packageName, String comment) {
         if (mCallBack != null) {
-            mCallBack.showAppInfo(name, packageName);
+            mCallBack.showAppInfo(name, packageName, comment);
         }
     }
 

@@ -19,15 +19,15 @@
 
 <layer-list xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <item android:id="@android:id/background"
+    <item android:id="@+id/background"
           android:drawable="@drawable/progress_bg_flavored" />
 
-    <item android:id="@android:id/secondaryProgress">
+    <item android:id="@+id/secondaryProgress">
         <scale android:scaleWidth="100%"
                android:drawable="@drawable/progress_secondary_flavored" />
     </item>
 
-    <item android:id="@android:id/progress">
+    <item android:id="@+id/progress">
         <scale android:scaleWidth="100%"
                android:drawable="@drawable/progress_primary_flavored" />
     </item>

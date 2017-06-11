@@ -5,27 +5,40 @@ import android.app.ActivityManager;
 import android.app.ActivityManager.RunningAppProcessInfo;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
+import android.preference.PreferenceManager;
 import android.provider.Settings;
 
+import com.projectsexception.myapplist.MyAppListPreferenceActivity;
 import com.projectsexception.myapplist.R;
 import com.projectsexception.myapplist.model.AppInfo;
+import com.projectsexception.myapplist.model.MyAppListDbHelper;
+import com.projectsexception.myapplist.xml.AppXMLHandler;
+import com.projectsexception.myapplist.xml.FileUtil;
+import com.projectsexception.myapplist.xml.ParserException;
+import com.projectsexception.myapplist.xml.ParserUtil;
 import com.projectsexception.util.AndroidUtils;
 import com.projectsexception.util.CustomLog;
 
+import java.io.File;
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
 import de.keyboardsurfer.android.widget.crouton.Crouton;
 import de.keyboardsurfer.android.widget.crouton.Style;
 
 public class AppUtil {
 
+    private static final String TAG = "AppUtil";
     private static final String SCHEME = "package";
     private static final String APP_PKG_NAME_21 = "com.android.settings.ApplicationPkgName";
     private static final String APP_PKG_NAME_22 = "pkg";
@@ -33,7 +46,7 @@ public class AppUtil {
     private static final String APP_DETAILS_CLASS_NAME = "com.android.settings.InstalledAppDetails";
     private static final String APP_GOOGLE_PLAY = "com.android.vending";
 
-    public static ArrayList<AppInfo> loadAppInfoList(PackageManager packageManager, boolean hideSystemApps) {
+    public static ArrayList<AppInfo> loadAppInfoList(Context context, PackageManager packageManager, boolean hideSystemApps) {
         List<ApplicationInfo> applicationInfoList = null;
         try {
             applicationInfoList = packageManager.getInstalledApplications(0);
@@ -53,6 +66,49 @@ public class AppUtil {
                 entries.add(entry);
             }
         }
+
+        //* start of loading backup file
+        // Filename
+        String fileName = context.getString(R.string.backup_filename);
+        // Get app list from system
+        // List<AppInfo> list = AppUtil.loadAppInfoList(getPackageManager(), true);
+        File file = FileUtil.loadFile(context, fileName);
+        //* load uninstalledApps from file
+        if (file != null && file.exists()) {
+                // Get app list from backup file
+                AppXMLHandler xmlHandler = new AppXMLHandler();
+                try {
+                    ParserUtil.launchParser(file, xmlHandler);
+                    //* appInfoList from file
+                    ArrayList<AppInfo> appInfoList = xmlHandler.getAppInfoList();
+                    if (appInfoList != null && !appInfoList.isEmpty()) {
+                        //* add appInfo into a set
+                        Set<String> packages = new HashSet<String>();
+                        for (AppInfo appInfo : entries) {
+                            packages.add(appInfo.getPackageName());
+                        }
+
+                        // iterate the appInfoList(from file)
+                        for (AppInfo appInfo : appInfoList) {
+                            if (!packages.contains(appInfo.getPackageName())) {
+                                entries.add(appInfo);
+                            }
+                            else {
+                                //* already exist in list, only load the comment
+                                for (AppInfo appInfo_2 : entries){
+                                    if(appInfo_2.getName().equals(appInfo.getName())){
+                                        // load the comments from file
+                                        appInfo_2.setComment(appInfo.getComment());
+                                    }
+                                }
+                            }
+                        }
+                    }
+                } catch (ParserException e) {
+                    CustomLog.getInstance().error(TAG, e);
+                }
+        }
+
         return entries;
     }
 

@@ -8,7 +8,7 @@
     tools:context=".ShareActivity">
 
     <TextView
-        android:id="@android:id/title"
+        android:id="@+id/title_activity_share"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginRight="@dimen/share_form_margin"
@@ -21,7 +21,7 @@
         android:textSize="@dimen/share_title_size"/>
 
     <Spinner
-        android:id="@+id/spinner"
+        android:id="@+id/spinner_activity_share"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="@dimen/share_form_margin"
@@ -35,7 +35,7 @@
         android:padding="@dimen/share_msg_padding" >
 
         <TextView
-            android:id="@android:id/text1"
+            android:id="@+id/text_activity_share"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:padding="@dimen/share_msg_padding"
@@ -45,7 +45,7 @@
     </ScrollView>
 
     <ImageButton
-        android:id="@android:id/button1"
+        android:id="@+id/button_activity_share"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"

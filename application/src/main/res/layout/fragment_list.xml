@@ -4,7 +4,7 @@
     android:layout_height="match_parent">
 
     <TextView
-        android:id="@android:id/empty"
+        android:id="@+id/empty_fragment_list"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
@@ -20,7 +20,7 @@
         style="?listViewStyle"/>
 
     <ProgressBar
-        android:id="@android:id/progress"
+        android:id="@+id/progress_fragment_list"
         android:layout_width="60dp"
         android:layout_height="60dp"
         android:layout_gravity="center"/>

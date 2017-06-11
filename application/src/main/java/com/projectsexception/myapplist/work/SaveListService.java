@@ -41,8 +41,9 @@ public class SaveListService extends IntentService {
         // Filename
         String fileName = getString(R.string.backup_filename);
         // Get app list from system
-        List<AppInfo> list = AppUtil.loadAppInfoList(getPackageManager(), true);
+        List<AppInfo> list = AppUtil.loadAppInfoList(this, getPackageManager(), true);
         File file = FileUtil.loadFile(this, fileName);
+        //* load uninstalledApps from file
         if (file != null && file.exists()) {
             SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
             boolean uninstalledApps = prefs.getBoolean(MyAppListPreferenceActivity.KEY_BACKUP_UNINSTALLED_APPS, false);

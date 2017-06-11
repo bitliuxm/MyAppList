@@ -12,6 +12,7 @@ public class AppXMLHandler extends DefaultHandler {
     
     private static final String PACKAGE_ELEMENT = "package";
     private static final String NAME_ELEMENT = "name";
+    private static final String COMMENT_ELEMENT = "comment";
     private static final String APP_ELEMENT = "app";
     
     private ArrayList<AppInfo> appInfoList;
@@ -27,10 +28,12 @@ public class AppXMLHandler extends DefaultHandler {
             // Aplication
             String name = getAttribute(attributes, NAME_ELEMENT);
             String packageName = getAttribute(attributes, PACKAGE_ELEMENT);
+            String comment = getAttribute(attributes, COMMENT_ELEMENT);
             if (name != null && packageName != null) {
                 AppInfo appInfo = new AppInfo();
                 appInfo.setName(name);
                 appInfo.setPackageName(packageName);
+                appInfo.setComment(comment);
                 appInfoList.add(appInfo);
             }
         }

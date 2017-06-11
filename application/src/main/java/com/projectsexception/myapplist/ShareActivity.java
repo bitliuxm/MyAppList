@@ -28,9 +28,6 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-import butterknife.InjectView;
-import butterknife.Optional;
-import butterknife.ButterKnife;
 import de.keyboardsurfer.android.widget.crouton.Crouton;
 import de.keyboardsurfer.android.widget.crouton.Style;
 
@@ -91,38 +88,33 @@ public class ShareActivity extends BaseActivity implements ShareTaskFragment.Cal
     /**
      * Store the title textView
      */
-    @InjectView(android.R.id.title) TextView mTitle;
+    TextView mTitle;
 
     /**
      * Store the message textView
      */
-    @InjectView(android.R.id.text1) TextView mMessage;
+    TextView mMessage;
 
     /**
      * Store the share type spinner (only in small screens)
      */
-    @InjectView(R.id.spinner)
-    @Optional
     Spinner mSpinner;
 
     /**
      * Store the list with the share types (only in big screens)
      */
-    @InjectView(R.id.list)
-    @Optional
     ListView mListView;
 
     /**
      * Store the share button
      */
-    @InjectView(android.R.id.button1) ImageButton mShare;
+    ImageButton mShare;
     
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_share);
-        ButterKnife.inject(this);
 
         // Set up the action bar.
         final ActionBar actionBar = getSupportActionBar();
@@ -134,6 +126,13 @@ public class ShareActivity extends BaseActivity implements ShareTaskFragment.Cal
         if (filePath != null) {
             mFile = new File(filePath);
         }
+
+        mTitle = (TextView) findViewById(R.id.title_activity_share);
+        mMessage = (TextView) findViewById(R.id.text_activity_share);
+        //mSpinner = findViewById(android.R.id.spinner_activity_share);
+        mListView = (ListView) findViewById(R.id.list_activity_share);
+        mShare = (ImageButton) findViewById(R.id.button_activity_share);
+
         mAppList = getIntent().getParcelableArrayListExtra(APP_LIST);
 
         final List<String> itemList = new ArrayList<String>();

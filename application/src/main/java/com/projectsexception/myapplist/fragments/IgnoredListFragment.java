@@ -29,9 +29,6 @@ import com.projectsexception.myapplist.work.AppListLoader;
 import java.util.ArrayList;
 import java.util.List;
 
-import butterknife.InjectView;
-import butterknife.ButterKnife;
-
 public class IgnoredListFragment extends ListFragment implements
         LoaderManager.LoaderCallbacks<ArrayList<AppInfo>>,
         AdapterView.OnItemClickListener {
@@ -46,9 +43,9 @@ public class IgnoredListFragment extends ListFragment implements
     private SparseBooleanArray mCheckItems;
     private boolean mListShown;
     private boolean mAnimations;
-    @InjectView(android.R.id.list) ListView mListView;
-    @InjectView(android.R.id.empty) View mEmptyView;
-    @InjectView(android.R.id.progress) View mProgress;
+    ListView mListView;
+    View mEmptyView;
+    View mProgress;
     
     @Override
     public void onAttach(Activity activity) {
@@ -63,7 +60,9 @@ public class IgnoredListFragment extends ListFragment implements
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_list, container, false);
-        ButterKnife.inject(this, view);
+        mListView = (ListView) view.findViewById(android.R.id.list);
+        mEmptyView = view.findViewById(R.id.empty_fragment_list);
+        mProgress = view.findViewById(R.id.progress_fragment_list);
         return view;
     }
 

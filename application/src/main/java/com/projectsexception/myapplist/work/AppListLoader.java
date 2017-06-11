@@ -20,6 +20,7 @@ public class AppListLoader extends AbstractListLoader {
     
     private final PackageManager mPm;
     private final boolean mHideSystemApps;
+    private final Context mContext;
 
     public AppListLoader(Context context) {
         super(context);
@@ -27,6 +28,7 @@ public class AppListLoader extends AbstractListLoader {
         // Retrieve the package manager for later use; note we don't
         // use 'context' directly but instead the save global application
         // context returned by getContext().
+        mContext = context;
         mPm = getContext().getPackageManager();
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         mHideSystemApps = prefs.getBoolean(MyAppListPreferenceActivity.KEY_HIDE_SYSTEM_APPS, true);
@@ -34,7 +36,7 @@ public class AppListLoader extends AbstractListLoader {
 
     @Override
     public ArrayList<AppInfo> loadAppInfoList() {
-        return AppUtil.loadAppInfoList(mPm, mHideSystemApps);
+        return AppUtil.loadAppInfoList(mContext, mPm, mHideSystemApps);
     }
 
     @Override

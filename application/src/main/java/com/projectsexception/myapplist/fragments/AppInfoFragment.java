@@ -4,7 +4,9 @@ import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.ActivityManager;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
@@ -17,6 +19,7 @@ import android.support.v4.app.FragmentActivity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -31,8 +34,6 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 
-import butterknife.InjectView;
-import butterknife.ButterKnife;
 import de.keyboardsurfer.android.widget.crouton.Crouton;
 import de.keyboardsurfer.android.widget.crouton.Style;
 
@@ -40,6 +41,7 @@ public class AppInfoFragment extends Fragment implements View.OnClickListener {
     
     public static interface CallBack {
         void removeAppInfoFragment();
+        void updateAppInfo(String mName, String mPackage, String mCommentString);
     }
     
     static final String KEY_LISTENER = "AppInfoFragment";
@@ -47,12 +49,14 @@ public class AppInfoFragment extends Fragment implements View.OnClickListener {
     static final String PERMISSION_PREFIX = "android.permission.";
 
     static final String PACKAGE_ARG = "packageArg";
+    static final String COMMENT_ARG = "commentArg";
 
-    public static AppInfoFragment newInstance(String name, String packageName) {
+    public static AppInfoFragment newInstance(String name, String packageName, String comment) {
         AppInfoFragment frg = new AppInfoFragment();
         Bundle args = new Bundle();
         args.putString(NAME_ARG, name);
         args.putString(PACKAGE_ARG, packageName);
+        args.putString(COMMENT_ARG, comment);
         frg.setArguments(args);
         return frg;
     }
@@ -60,21 +64,23 @@ public class AppInfoFragment extends Fragment implements View.OnClickListener {
     private CallBack mCallBack;
     private String mName;
     private String mPackage;
-    @InjectView(R.id.icon) ImageView mIcon;
-    @InjectView(R.id.title) TextView mTitle;
-    @InjectView(R.id.package_name) TextView mPackageName;
-    @InjectView(R.id.status) TextView mStatus;
-    @InjectView(R.id.info) View mInfo;
-    @InjectView(R.id.play) View mPlay;
-    @InjectView(R.id.version) TextView mVersion;
-    @InjectView(R.id.app_data) View mApplicationData;
-    @InjectView(R.id.play_linked) TextView mPlayLinked;
-    @InjectView(R.id.stop_application) TextView mStopApplication;
-    @InjectView(R.id.uninstall_application) TextView mUninstallApplication;
-    @InjectView(R.id.start_application) TextView mStartApplication;
-    @InjectView(R.id.app_date) TextView mApplicationDate;
-    @InjectView(R.id.app_date_sep) View mApplicationDateSeparator;
-    @InjectView(R.id.permissions) TextView mApplicationPermissions;
+    private String mCommentString;
+    ImageView mIcon;
+    TextView mTitle;
+    TextView mPackageName;
+    TextView mStatus;
+    TextView mComment;
+    View mInfo;
+    View mPlay;
+    TextView mVersion;
+    View mApplicationData;
+    TextView mPlayLinked;
+    TextView mStopApplication;
+    TextView mUninstallApplication;
+    TextView mStartApplication;
+    TextView mApplicationDate;
+    View mApplicationDateSeparator;
+    TextView mApplicationPermissions;
 
     public String getShownPackage() {
         return mPackage;
@@ -96,6 +102,7 @@ public class AppInfoFragment extends Fragment implements View.OnClickListener {
         ApplicationsReceiver.getInstance(getActivity()).registerListener(KEY_LISTENER);
         mName = getArguments().getString(NAME_ARG);
         mPackage = getArguments().getString(PACKAGE_ARG);
+        mCommentString = getArguments().getString(COMMENT_ARG);
         if (mPackage != null) {
             PackageManager pManager = getActivity().getPackageManager();
             final PackageInfo packageInfo = AppUtil.loadPackageInfo(pManager, mPackage);
@@ -109,7 +116,25 @@ public class AppInfoFragment extends Fragment implements View.OnClickListener {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.app_info, container, false);
-        ButterKnife.inject(this, view);
+        mIcon = (ImageView) view.findViewById(R.id.icon);
+        mTitle = (TextView) view.findViewById(R.id.title);
+        mPackageName = (TextView) view.findViewById(R.id.package_name);
+        mStatus = (TextView) view.findViewById(R.id.status);
+        mComment = (TextView) view.findViewById(R.id.comment);
+        mInfo = view.findViewById(R.id.info);
+        mPlay = view.findViewById(R.id.play);
+        mVersion = (TextView) view.findViewById(R.id.version);
+        mApplicationData = view.findViewById(R.id.app_data);
+        mPlayLinked = (TextView) view.findViewById(R.id.play_linked);
+        mStopApplication = (TextView) view.findViewById(R.id.stop_application);
+        mUninstallApplication = (TextView) view.findViewById(R.id.uninstall_application);
+        mStartApplication = (TextView) view.findViewById(R.id.start_application);
+        mApplicationDate = (TextView) view.findViewById(R.id.app_date);
+        mApplicationDateSeparator = view.findViewById(R.id.app_date_sep);
+        mApplicationPermissions = (TextView) view.findViewById(R.id.permissions);
+
+        mIcon.setOnClickListener(this);
+        mComment.setOnClickListener(this);
         mInfo.setOnClickListener(this);
         mPlay.setOnClickListener(this);
         return view;
@@ -123,6 +148,7 @@ public class AppInfoFragment extends Fragment implements View.OnClickListener {
         if (receiver.isContextChanged(KEY_LISTENER)) {
             mName = null;
             mPackage = null;
+            mCommentString= null;
             receiver.removeListener(KEY_LISTENER);
             mCallBack.removeAppInfoFragment();
         }
@@ -136,6 +162,7 @@ public class AppInfoFragment extends Fragment implements View.OnClickListener {
             mIcon.setImageResource(R.drawable.ic_default_launcher);
             mTitle.setText(mName);
             mPackageName.setText(mPackage);
+            mComment.setText(mCommentString);
             mInfo.setEnabled(false);
             mVersion.setVisibility(View.INVISIBLE);
             mStatus.setText(R.string.app_info_not_installed);
@@ -156,6 +183,7 @@ public class AppInfoFragment extends Fragment implements View.OnClickListener {
             mIcon.setImageDrawable(applicationInfo.loadIcon(pManager));
             mTitle.setText(applicationInfo.loadLabel(pManager));
             mPackageName.setText(packageName);
+            mComment.setText(mCommentString);
             mInfo.setEnabled(true);
             mVersion.setText(getString(R.string.app_info_version, packageInfo.versionName, packageInfo.versionCode));
             if ((applicationInfo.flags & ApplicationInfo.FLAG_EXTERNAL_STORAGE) == ApplicationInfo.FLAG_EXTERNAL_STORAGE) {
@@ -249,6 +277,7 @@ public class AppInfoFragment extends Fragment implements View.OnClickListener {
         if (ThemeManager.isFlavoredTheme(getActivity())) {
             TypefaceProvider.setTypeFace(getActivity(), mTitle, TypefaceProvider.FONT_BOLD);
             TypefaceProvider.setTypeFace(getActivity(), mPackageName, TypefaceProvider.FONT_REGULAR);
+            TypefaceProvider.setTypeFace(getActivity(), mComment, TypefaceProvider.FONT_REGULAR);
             TypefaceProvider.setTypeFace(getActivity(), mStatus, TypefaceProvider.FONT_REGULAR);
             TypefaceProvider.setTypeFace(getActivity(), mVersion, TypefaceProvider.FONT_REGULAR);
             TypefaceProvider.setTypeFace(getActivity(), mPlayLinked, TypefaceProvider.FONT_REGULAR);
@@ -291,6 +320,35 @@ public class AppInfoFragment extends Fragment implements View.OnClickListener {
             AppUtil.showInstalledAppDetails(getActivity(), mPackage);
         } else if (v == mPlay) {
             AppUtil.showPlayGoogleApp(getActivity(), mPackage, false);
+        } else if (v == mComment || v == mIcon) {
+            final Context context = getActivity();
+            if (context != null) {
+                AlertDialog.Builder alert = new AlertDialog.Builder(context);
+                alert.setTitle("comment:");
+                // alert.setMessage(R.string.new_file_dialog_msg);
+                // By default, the name is rmb-<date>.xml
+                // Time time = new Time();
+                // time.setToNow();
+                // String fileName = context.getString(R.string.new_file_dialog_name, time.format("%Y%m%d"));
+                // Set an EditText view to get user input
+                final EditText input = new EditText(context);
+                // input.setText(fileName);
+                alert.setView(input);
+                alert.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int whichButton) {
+                        mCommentString = input.getText().toString();
+                        mComment.setText(mCommentString);
+                        mCallBack.updateAppInfo(mName, mPackage, mCommentString);
+                    }
+                });
+
+                alert.setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int whichButton) {
+                        // Canceled.
+                    }
+                });
+                alert.create().show();
+            }
         }
     }
     

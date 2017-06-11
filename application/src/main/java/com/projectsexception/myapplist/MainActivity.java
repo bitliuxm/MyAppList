@@ -28,9 +28,6 @@ import com.projectsexception.util.CustomLog;
 import com.projectsexception.myapplist.work.AppSaveTask;
 import com.projectsexception.myapplist.xml.FileUtil;
 
-import butterknife.InjectView;
-import butterknife.Optional;
-import butterknife.ButterKnife;
 import de.keyboardsurfer.android.widget.crouton.Configuration;
 import de.keyboardsurfer.android.widget.crouton.Crouton;
 import de.keyboardsurfer.android.widget.crouton.Style;
@@ -58,8 +55,6 @@ public class MainActivity extends BaseActivity implements
     private String mFileStream;
     private boolean mDualPane;
     private Crouton mCroutonRate;
-    @InjectView(R.id.app_info)
-    @Optional
     View mDetailsFrame;
 
     @Override
@@ -67,9 +62,10 @@ public class MainActivity extends BaseActivity implements
         super.onCreate(args);
 
         setContentView(R.layout.activity_list);
-        ButterKnife.inject(this);
 
-        checkRateApp();
+        mDetailsFrame = findViewById(R.id.app_info);
+
+        //checkRateApp();
 
         String fileName = getIntent().getStringExtra(ARG_FILE);
 
@@ -122,8 +118,8 @@ public class MainActivity extends BaseActivity implements
         if (numExecutions >= MAX_EXECUTIONS) {
             sp.edit().putInt(NUM_EXECUTIONS, 0).commit();
             View view = getLayoutInflater().inflate(R.layout.crouton_rate, null);
-            view.findViewById(android.R.id.text1).setOnClickListener(this);
-            view.findViewById(android.R.id.button1).setOnClickListener(this);
+            view.findViewById(R.id.text1).setOnClickListener(this);
+            view.findViewById(R.id.button1).setOnClickListener(this);
             Configuration configuration = new Configuration.Builder().setDuration(Configuration.DURATION_LONG).build();
             mCroutonRate = Crouton.make(this, view);
             mCroutonRate.setConfiguration(configuration);
@@ -167,7 +163,7 @@ public class MainActivity extends BaseActivity implements
     }
 
     @Override
-    public void showAppInfo(String name, String packageName) {
+    public void showAppInfo(String name, String packageName, String comment) {
         FragmentManager fm = getSupportFragmentManager();
 
         AppInfoFragment infoFragment = null;
@@ -188,7 +184,7 @@ public class MainActivity extends BaseActivity implements
                 || infoFragment.getShownPackage() == null
                 || !infoFragment.getShownPackage().equals(packageName)) {
             // Make new fragment to show this selection.
-            infoFragment = AppInfoFragment.newInstance(name, packageName);
+            infoFragment = AppInfoFragment.newInstance(name, packageName, comment);
 
             // Execute a transaction, replacing any existing
             // fragment with this one inside the frame.
@@ -286,6 +282,21 @@ public class MainActivity extends BaseActivity implements
         } else {
             fm.popBackStack();
         }
+    }
+
+    @Override
+    public void updateAppInfo(String mName, String mPackage, String mCommentString) {
+        List<AppInfo> mAppListLocal = null;
+        FragmentManager fm = getSupportFragmentManager();
+        List<Fragment> fms = fm.getFragments();
+        for ( Fragment f : fms){
+            if (f instanceof AppListFragment){
+                mAppListLocal = ((AppListFragment) f).updateAppInfo(mName, mPackage, mCommentString);
+            }
+        }
+
+        if( mAppListLocal != null )
+            new AppSaveTask(MainActivity.this, null, mAppListLocal).execute(this.getString(R.string.backup_filename));
     }
 
     /*
